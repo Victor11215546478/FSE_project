@@ -1,3 +1,7 @@
+"""
+KD-tree implementation
+"""
+
 from collections import defaultdict
 import scipy.spatial
 import numpy as np
@@ -9,13 +13,16 @@ def get_cutdims(tree, max_depth=7):
 
     Args:
     - tree (scipy.spatial.ckdtree.cKDTree): a kdtree
-    - max_depth (int): go to this depth on every node. If a branch is shorter or longer than max_depth then we repeat the end node or terminate the branch early.
+    - max_depth (int): go to this depth on every node. If a branch is shorter or longer
+    than max_depth then we repeat the end node or terminate the branch early.
 
     Returns:
     - cutdims (list): list , each item giving the split dimensions at that level
-        - (array) numpy int64 array, giving which dimension the kdtree split along . Shape=(2**level,)
+        - (array) numpy int64 array, giving which dimension the kdtree split along.
+        Shape=(2**level,)
     - tree_idxs (list): list of numpy int64 arrays for each level.
-        - (array) Each array is for one level and gives the indices of points at each node. Shape=(2**level, 2**(max_depth-level))
+        - (array) Each array is for one level and gives the indices of points at each node.
+        Shape=(2**level, 2**(max_depth-level))
     """
     cutdims = defaultdict(list)
     tree_idxs = defaultdict(list)
@@ -29,26 +36,30 @@ def get_cutdims(tree, max_depth=7):
             indices = tree.indices
 
             # make sure it's the right amount of indices for this depth
-            n = 2**(max_depth - level)
-            if len(indices) > n:
+            n_depth = 2 ** (max_depth - level)
+            if len(indices) > n_depth:
                 # since we repeated the premature leafs we might get duplicate indices
                 # or this might comes into play if the input is too large for the tree
                 # print('crop', n, len(indices), level)
-                inds = np.random.choice(range(len(indices)), n)
+                inds = np.random.choice(range(len(indices)), n_depth)
                 indices = indices[inds]
-            elif len(indices) < n:
+            elif len(indices) < n_depth:
                 # pad if input is too small for tree
                 # print('pad', n, len(indices), level)
-                indices = np.concatenate([indices, indices[0:1].repeat(n - len(indices))])
+                indices = np.concatenate(
+                    [indices, indices[0:1].repeat(n_depth - len(indices))]
+                )
 
             # end recursion
             tree_idxs[level].append(indices)
             return indices
 
-        indices = np.concatenate([
-            _get_cutdims(tree.lesser, level=level + 1, parent=tree),
-            _get_cutdims(tree.greater, level=level + 1, parent=tree)
-        ])
+        indices = np.concatenate(
+            [
+                _get_cutdims(tree.lesser, level=level + 1, parent=tree),
+                _get_cutdims(tree.greater, level=level + 1, parent=tree),
+            ]
+        )
         if level < max_depth:
             tree_idxs[level].append(indices)
 
