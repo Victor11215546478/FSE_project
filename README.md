@@ -6,6 +6,7 @@ This repository contains the refactored database with an implementation of https
 # _Annotation_
 Authors of the article above developed a new deep learning architecture for  3D model recognition tasks called Kd-network. This architecture is based on kd-trees and gives certain advantage compared to the currently dominant convolutional architectures. Authors' technique provides remarkably good perfomance on a variety of popular benchmarks 
 
+# _Docker image_
 You can find a docker image via the below link:
 https://hub.docker.com/repository/docker/victor11215546478/fse_project
 
