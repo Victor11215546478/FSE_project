@@ -1,18 +1,15 @@
-FROM python:3.8
-
-RUN apt-get update --fix-missing && \
-    apt-get -yq install wget unzip && \
-    apt-get -yq install ffmpeg libsm6 libxext6
+FROM python:3.8 
 
 RUN mkdir "/repo"
 WORKDIR "/repo"
 
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN apt-get update && \
+    apt-get -yq install wget unzip ffmpeg libsm6 libxext6
 
 COPY . .
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-RUN ["sh","download.sh"]
+RUN ["sh", "download.sh"]
 RUN ["make"]
 
 ENTRYPOINT ["/bin/bash"]
