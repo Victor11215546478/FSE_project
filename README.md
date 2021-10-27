@@ -11,6 +11,7 @@ Authors of the article above developed a new deep learning architecture for  3D 
   docker build -t kdnet .
 3. run:
   docker run -it kdnet
+  
 If you downloaded the image from dockerhab, then you need to do sh download.sh after starting
 4. Type "python3 train.py" to train network.
 5. Type "python3 test.py" to test network.
